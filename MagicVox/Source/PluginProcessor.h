@@ -10,6 +10,10 @@
 
 #include <JuceHeader.h>
 
+
+#include "/Users/noelia/Documents/GitHub/MagicVox/MagicVox/DSP/Gain.hpp"
+//#include "DSP/Distortion.h"
+
 //==============================================================================
 /**
 */
@@ -55,8 +59,16 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    
+    void updateParameters();
 
 private:
+    Gain preGain;
+    Distorsion distorsion;
+    Gain outGain;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagicVoxAudioProcessor)
 };

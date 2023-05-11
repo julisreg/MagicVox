@@ -12,14 +12,14 @@
 //==============================================================================
 MagicVoxAudioProcessor::MagicVoxAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+: AudioProcessor (BusesProperties()
+                #if ! JucePlugin_IsMidiEffect
+                 #if ! JucePlugin_IsSynth
+                  .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                 #endif
+                  .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                #endif
+                  ), apvts(*this, nullptr, "Parameters", createParameters())
 #endif
 {
 }
@@ -27,7 +27,12 @@ MagicVoxAudioProcessor::MagicVoxAudioProcessor()
 MagicVoxAudioProcessor::~MagicVoxAudioProcessor()
 {
 }
-
+juce::AudioProcessorValueTreeState::ParameterLayout MagicVoxAudioProcessor::createParameters()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout parametros;
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PreGain",1), "PreGain",0.0f, 5.0f, 1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID ("Soft Clipping",1), "Soft Clipping", 0.0f, 5.0f, 1.0f));
+}
 //==============================================================================
 const juce::String MagicVoxAudioProcessor::getName() const
 {
