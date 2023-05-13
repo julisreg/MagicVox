@@ -32,6 +32,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MagicVoxAudioProcessor::crea
     juce::AudioProcessorValueTreeState::ParameterLayout parametros;
     parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PreGain",1), "PreGain",0.0f, 5.0f, 1.0f));
     parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID ("Soft Clipping",1), "Soft Clipping", 0.0f, 5.0f, 1.0f));
+    return parametros;
 }
 //==============================================================================
 const juce::String MagicVoxAudioProcessor::getName() const
