@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 
 
-#include "/Users/noelia/Documents/GitHub/MagicVox/MagicVox/DSP/Gain.hpp"
+#include "DSP/Gain.h"
 //#include "DSP/Distortion.h"
 
 //==============================================================================
@@ -67,7 +67,7 @@ public:
 
 private:
     Gain preGain;
-    Distorsion distorsion;
+    //Distorsion distorsion;
     Gain outGain;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagicVoxAudioProcessor)

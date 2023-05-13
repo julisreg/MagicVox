@@ -12,6 +12,10 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="JA8T8T" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <GROUP id="{3ED4BE0A-60C8-40F1-337E-2CA8FF0E92BE}" name="DSP">
+      <FILE id="uZLM6j" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+      <FILE id="QV3yUh" name="Gain.cpp" compile="1" resource="0" file="Source/DSP/Gain.cpp"/>
+    </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>

@@ -5,4 +5,4 @@
 //  Created by Noelia Rego Cortes on 02/05/23.
 //
 
-#include "Gain.hpp"
+#include "Gain.h"
