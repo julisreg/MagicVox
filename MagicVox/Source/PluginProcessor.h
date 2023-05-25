@@ -12,7 +12,12 @@
 
 
 #include "DSP/Gain.h"
-//#include "DSP/Distortion.h"
+#include "DSP/Eq.h"
+#include "DSP/Distorsion.h"
+#include "DSP/Compressor.h"
+#include "DSP/Volumen.h"
+#include "DSP/DryWet.h"
+
 
 //==============================================================================
 /**
@@ -62,13 +67,18 @@ public:
     
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    juce::AudioBuffer<float> dryBuffer;
     
     void updateParameters();
 
 private:
     Gain preGain;
-    //Distorsion distorsion;
+    Distorsion distorsion;
     Gain outGain;
+    Eq equalization;
+    Compressor compressor;
+    Volumen volumenObject;
+    DryWet dryWetObject;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagicVoxAudioProcessor)
 };

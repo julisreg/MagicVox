@@ -13,7 +13,17 @@
       <FILE id="JA8T8T" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{3ED4BE0A-60C8-40F1-337E-2CA8FF0E92BE}" name="DSP">
+      <FILE id="YOc30f" name="Volumen.cpp" compile="1" resource="0" file="Source/DSP/Volumen.cpp"/>
+      <FILE id="yESJ67" name="Volumen.h" compile="0" resource="0" file="Source/DSP/Volumen.h"/>
+      <FILE id="KKVmPZ" name="DryWet.cpp" compile="1" resource="0" file="Source/DSP/DryWet.cpp"/>
+      <FILE id="yeMPm4" name="DryWet.h" compile="0" resource="0" file="Source/DSP/DryWet.h"/>
+      <FILE id="Cxjfov" name="Compressor.cpp" compile="1" resource="0" file="Source/DSP/Compressor.cpp"/>
+      <FILE id="Yo8dD2" name="Compressor.h" compile="0" resource="0" file="Source/DSP/Compressor.h"/>
+      <FILE id="VO6Xc9" name="Distorsion.cpp" compile="1" resource="0" file="Source/DSP/Distorsion.cpp"/>
       <FILE id="uZLM6j" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+      <FILE id="tAG6aW" name="Distorsion.h" compile="0" resource="0" file="Source/DSP/Distorsion.h"/>
+      <FILE id="BBIFnO" name="Eq.cpp" compile="1" resource="0" file="Source/DSP/Eq.cpp"/>
+      <FILE id="oUt4OZ" name="Eq.h" compile="0" resource="0" file="Source/DSP/Eq.h"/>
       <FILE id="QV3yUh" name="Gain.cpp" compile="1" resource="0" file="Source/DSP/Gain.cpp"/>
     </GROUP>
   </MAINGROUP>
@@ -37,6 +47,7 @@
         <MODULEPATH id="juce_graphics" path="../modules"/>
         <MODULEPATH id="juce_gui_basics" path="../modules"/>
         <MODULEPATH id="juce_gui_extra" path="../modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../../Desktop/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
@@ -50,6 +61,7 @@
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

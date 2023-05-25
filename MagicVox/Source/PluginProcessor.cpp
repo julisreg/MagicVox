@@ -19,7 +19,7 @@ MagicVoxAudioProcessor::MagicVoxAudioProcessor()
                  #endif
                   .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                 #endif
-                  ), apvts(*this, nullptr, "Parameters", createParameters())
+                  ), apvts(*this, nullptr, "parametros", createParameters())
 #endif
 {
 }
@@ -30,8 +30,18 @@ MagicVoxAudioProcessor::~MagicVoxAudioProcessor()
 juce::AudioProcessorValueTreeState::ParameterLayout MagicVoxAudioProcessor::createParameters()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout parametros;
+    
     parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PreGain",1), "PreGain",0.0f, 5.0f, 1.0f));
     parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID ("Soft Clipping",1), "Soft Clipping", 0.0f, 5.0f, 1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Gain", 1), "Gain", 0.0f, 5.0f, 1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("OutGain", 1), "OutGain", 0.0f, 5.0f, 1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Q",1), "Q",0.0f,10.0f,5.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("GainFactorEq",1), "GainFactorEq",-50.0f,10.0f,0.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Compressor",1), "Compressor",-50.0f,10.0f,1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("Volume",1), "Volume",0.0f,1.0f,1.0f));
+    parametros.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("DryWet",1), "DryWet",0.0f, 100.0f, 100.0f));
+
+    
     return parametros;
 }
 //==============================================================================
@@ -97,10 +107,19 @@ void MagicVoxAudioProcessor::changeProgramName (int index, const juce::String& n
 }
 
 //==============================================================================
-void MagicVoxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MagicVoxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) //EL PLATO.
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.numChannels = getTotalNumOutputChannels();
+    spec.maximumBlockSize = samplesPerBlock; // BUFFER SIZE
+    
+    equalization.prepare(spec);
+    compressor.prepare (spec);
+    
 }
 
 void MagicVoxAudioProcessor::releaseResources()
@@ -140,28 +159,46 @@ void MagicVoxAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+    
+    dryBuffer.makeCopyOf (buffer);
+    
+    //GAIN
+    auto preGainValue = apvts.getRawParameterValue ("PreGain") -> load();
+    auto gainValue = apvts.getRawParameterValue ("Gain") -> load();
+    
+    //VOLUMEN
+    float volValue     = apvts.getRawParameterValue ("Volume")->load();
+    
+    //DISTORSION
+    auto distortionIndex = apvts.getRawParameterValue ("Distortion") -> load();
+    auto outGainValue = apvts.getRawParameterValue ("OutGain") -> load();
+    
+    //EQ
+    auto qValue = apvts.getRawParameterValue("Q")->load(); //float
+    auto gainFactorDB = apvts.getRawParameterValue("GainFactorEq")->load();
+    auto gainFactorEq =    juce::Decibels::decibelsToGain(gainFactorDB); //paso de DBs a LINEAL
+    
+    //COMPRESOR
+    auto compressorInputGainDB = apvts.getRawParameterValue("Compressor")->load();
+    auto compressorInputGain = juce::Decibels::decibelsToGain(compressorInputGainDB);
+    
+    //DRY WET
+    float dryWetValue  = apvts.getRawParameterValue ("DryWet")->load();
+    
+    equalization.updateFilter(qValue, gainFactorEq);
+    
+//COMER /// PROCESOS
+    equalization.process(buffer);
+    compressor.process(buffer);
+    preGain.setGain (preGainValue);
+    outGain.setGain (outGainValue);
+    volumenObject.process (buffer, volValue);
+    distorsion.setGain (gainValue);
+    distorsion.setDistortion(distortionIndex);
+    distorsion.process(buffer);
+    dryWetObject.process  (dryBuffer, buffer, dryWetValue);
 }
 
 //==============================================================================
@@ -172,7 +209,8 @@ bool MagicVoxAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* MagicVoxAudioProcessor::createEditor()
 {
-    return new MagicVoxAudioProcessorEditor (*this);
+//    return new MagicVoxAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
